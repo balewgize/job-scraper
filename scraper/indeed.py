@@ -21,7 +21,7 @@ class IndeedScraper:
 
     def __init__(self, query, location=""):
         self.query = query
-        self.location = "United States"
+        self.location = location
         self.base_url = "https://www.indeed.com"
         self.url = f"{self.base_url}/jobs?q={self.query}&l={location}&limit=50"
         self.all_jobs = {}
@@ -66,8 +66,7 @@ class IndeedScraper:
                     break
                 except Exception as error:
                     print(f"Failed to extract similar jobs.", error)
-        else:
-            print("Failed to extract current page (similar).")
+                    break
 
     def get_job_detail(self, job):
         """Extract job detail for a single job post."""
@@ -95,9 +94,9 @@ class IndeedScraper:
         location = re.sub(r"(\+\d+ location[s]?)", "", location)
         location = location.replace("•", " or ")
         if location.lower() == "remote":
-            location = "Remote"
+            country = "Remote"
         else:
-            location = self.location
+            country = self.location
         remote = "Yes" if "remote" in location.lower() else "No"
         job_key = ""
         href = job.attrs.get("href")
@@ -107,7 +106,7 @@ class IndeedScraper:
             job_key = href.split("?")[0].split("-")[-1]
         link = f"{self.base_url}/viewjob?jk={job_key}" if job_key else ""
 
-        return (job_key, [company, title, salary, location, location, remote, link])
+        return (job_key, [company, title, salary, location, country, remote, link])
 
     def extract_page(self, url):
         """Extract details of jobs on a single page."""
@@ -191,6 +190,7 @@ class IndeedScraper:
         print(f"Extracting jobs on page [ {page_num} ]...")
         start_url = f"{self.url}&start={(page_num-1)*50}"
         current_page = self.extract_page(start_url)
+        utils.save_progress(page_num + 1, self.filename, 2)
         time.sleep(random.randint(5, 10))
 
         if current_page:
