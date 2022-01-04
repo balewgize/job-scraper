@@ -12,14 +12,13 @@ Features:
 - pagination (scrape all result pages)
 - resume capability (continue where it left off incase of failure)
 
-
 ## How to use
 
-- Open Terminal or Cmd and go to the directory you want to put these project files
+- Open Terminal or Cmd and go to the directory you want to put these project files.
   Then clone the repository and navigate to job-scraper dir
 
 ```
-git clone https://www.github.com/balewgize/job-scraper.git
+git clone https://github.com/balewgize/job-scraper.git
 ```
 
 ```
@@ -56,3 +55,9 @@ pip install -r requirements.txt
 ```
 python job-scraper.py
 ```
+
+## Sample data
+
+![Alt text](~/Pictures/job-scraper-sample-data.png?raw=true "Screenshot")
+
+Thanks
