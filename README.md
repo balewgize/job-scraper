@@ -1,14 +1,29 @@
 # Job Scraper
 
+Scrape all job posts appearing on a search result from www.indeed.com and www.dice.com.
+
+It was built for <a href="https://www.upwork.com">Upwork</a> client that needs all job listings
+and their details extracted.
+
+Features:
+
+- fast
+- robust (exception handling)
+- pagination (scrape all result pages)
+- resume capability (continue where it left off incase of failure)
+
 
 ## How to use
 
+- Open Terminal or Cmd and go to the directory you want to put these project files
+  Then clone the repository and navigate to job-scraper dir
+
 ```
-git clone https://www.github.com/job-scraper.git
+git clone https://www.github.com/balewgize/job-scraper.git
 ```
 
 ```
-cd /path/to/job-scraper/
+cd job-scraper/
 ```
 
 - Create a virtual environment inside job-scraper directory
@@ -21,7 +36,7 @@ python -m venv venv
   (For Windows user)
 
 ```
-.\venv\Scripts\activate.bat
+.\venv\Scripts\activate
 ```
 
 (For Linux and Mac)
