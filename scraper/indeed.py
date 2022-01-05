@@ -21,7 +21,7 @@ class IndeedScraper:
 
     def __init__(self, query, location=""):
         self.query = query
-        self.location = "United States"
+        self.location = location
         self.base_url = "https://www.indeed.com"
         self.url = f"{self.base_url}/jobs?q={self.query}&l={location}&limit=50"
         self.all_jobs = {}
@@ -95,9 +95,9 @@ class IndeedScraper:
         location = re.sub(r"(\+\d+ location[s]?)", "", location)
         location = location.replace("•", " or ")
         if location.lower() == "remote":
-            location = "Remote"
+            country = "Remote"
         else:
-            location = self.location
+            country = self.location if self.location else "USA"
         remote = "Yes" if "remote" in location.lower() else "No"
         job_key = ""
         href = job.attrs.get("href")
@@ -107,7 +107,7 @@ class IndeedScraper:
             job_key = href.split("?")[0].split("-")[-1]
         link = f"{self.base_url}/viewjob?jk={job_key}" if job_key else ""
 
-        return (job_key, [company, title, salary, location, location, remote, link])
+        return (job_key, [company, title, salary, location, country, remote, link])
 
     def extract_page(self, url):
         """Extract details of jobs on a single page."""
@@ -135,6 +135,7 @@ class IndeedScraper:
                     for job_key, job_detail in self.all_jobs.items():
                         job_desc = descriptions[job_key]
                         if job_desc:
+                            job_desc = BeautifulSoup(job_desc, "lxml").find("body")
                             responsibility = utils.get_responsibility(job_desc)
                             qualification = utils.get_qualification(job_desc)
                             skills, experience = utils.get_skills_and_experience(

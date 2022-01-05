@@ -56,7 +56,7 @@ class DiceScraper:
         params = (
             ("q", self.query),
             ("page", page_num),
-            ("pageSize", self.page_size),
+            ("pageSize", "100"),
             (
                 "facets",
                 "employmentType|postedDate|workFromHomeAvailability|employerType|easyApply|isRemote",
@@ -222,9 +222,7 @@ class DiceScraper:
             result = json.loads(r.content)
             jobs = result["data"]
             page_count = result["meta"]["pageCount"]
-            print(
-                f"Total pages to be scraped: {page_count} ( around {self.page_size} jobs in each)"
-            )
+            print(f"Total pages to be scraped: {page_count} ( around 100 jobs in each)")
             print("Extracting jobs on page (", current_page, ")...")
 
             # # use threads to speed up job extraction

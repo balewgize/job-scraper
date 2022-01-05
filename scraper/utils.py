@@ -132,8 +132,7 @@ def get_responsibility(job_desc):
     """Extract responsibility associated with the job (if any)."""
     # a regex pattern used to search for responsibility
     pattern = r"\b(looking for|seeking|the role is|in this role|responsible|support|looking)\b"
-    if re.search(r"<([a-z]+) *[^/]*?>", job_desc):
-        job_desc = bs4.BeautifulSoup(job_desc, "lxml")
+    if type(job_desc) == bs4.element.Tag:
         responsibility = ""
         all_p = job_desc.find_all("p")
 
@@ -177,8 +176,7 @@ def get_skills_and_experience(job_desc):
     pattern = r"\b(experience|years|\+ years|yrs)\b"
     experience = set()
     skills = set()
-    if re.search(r"<([a-z]+) *[^/]*?>", job_desc):
-        job_desc = bs4.BeautifulSoup(job_desc, "lxml")
+    if type(job_desc) == bs4.element.Tag:
         all_li = job_desc.find_all("li")
         for li in all_li:
             text = li.text.strip()
@@ -244,8 +242,7 @@ def get_qualification(job_desc):
         r"(\b(PhD|BS[c]?|MS[c]?) (in (?:(?!(or|\.|/|\s\s)).)*|with \d\+ years)?\b)"
     )
 
-    if re.search(r"<([a-z]+) *[^/]*?>", job_desc):
-        job_desc = bs4.BeautifulSoup(job_desc, "lxml")
+    if type(job_desc) == bs4.element.Tag:
         match_one = re.search(pattern_one, job_desc.text, re.IGNORECASE)
         match_two = re.search(pattern_two, job_desc.text, re.IGNORECASE)
     else:
