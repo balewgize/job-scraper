@@ -58,6 +58,6 @@ python job-scraper.py
 
 ## Sample data
 
-![Alt text](/screenshot/job-scraper-sample-data.png?raw=true "Screenshot")
+![Alt text](/screenshot/Screenshot from 2022-01-05 13-52-07.png?raw=true "Screenshot")
 
 Thanks
