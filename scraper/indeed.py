@@ -66,8 +66,7 @@ class IndeedScraper:
                     break
                 except Exception as error:
                     print(f"Failed to extract similar jobs.", error)
-        else:
-            print("Failed to extract current page (similar).")
+                    break
 
     def get_job_detail(self, job):
         """Extract job detail for a single job post."""
@@ -192,6 +191,7 @@ class IndeedScraper:
         print(f"Extracting jobs on page [ {page_num} ]...")
         start_url = f"{self.url}&start={(page_num-1)*50}"
         current_page = self.extract_page(start_url)
+        utils.save_progress(page_num + 1, self.filename, 2)
         time.sleep(random.randint(5, 10))
 
         if current_page:
