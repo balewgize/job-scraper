@@ -27,7 +27,6 @@ class DiceScraper:
         self.query = query
         self.all_jobs = []
         self.filename = ""
-
         self.base_url = "https://job-search-api.svc.dhigroupinc.com/v1/dice/jobs/search"
 
         # this are obtanied from the cURL request the browser is making to the server
@@ -75,12 +74,11 @@ class DiceScraper:
 
     def get_salary(self, job, job_desc):
         """Extract salary information for the job posting (if any)."""
-        pattern = "(\$?\d+([,|.]\d+|[k|K])\s?((-|to)\s?\$\d+([,|.]\d+|[k|K]))?)"
+        pattern = r"(\$\d{2,}([,|.]?\d*|[k|K])\s?((-|to)\s?\$\d{2,}([,|.]?\d*|[k|K]))?)"
         salary = "0"
         try:
             salary = job["salary"]
-            salary = salary.replace("per year", "")
-            if "$" not in salary:
+            if not re.search(r"\d+", salary):
                 # the salary is expressed with words like 'Based on Experience'
                 # and salary may be in the job title, or in the job description
                 salary = "0"
@@ -89,15 +87,17 @@ class DiceScraper:
         finally:
             if salary == "0":
                 if re.search(pattern, job["title"]):
-                    salary = re.search(pattern, job["title"]).group(1)
+                    salary = re.search(pattern, job["title"]).group(0)
                 elif re.search(pattern, job_desc.text):
-                    salary = re.search(pattern, job_desc.text).group(1)
+                    salary = re.search(pattern, job_desc.text).group(0)
 
-        salary = salary.lower()
+        salary = salary.strip().lower()
         salary = salary.replace("k", ",000")
         salary = salary.replace("to", "-")
         if not salary.startswith("$") and salary != "0":
             salary = "$" + salary
+        
+        salary = utils.clean_salary(salary)
         return salary
 
     def is_remote_job(self, job, job_desc):
@@ -214,7 +214,16 @@ class DiceScraper:
         """Extract all result pages for a certain keyword."""
         global session
 
-        current_page = 1
+        if utils.get_progress(self.query, 1):
+            # already saved file found, append to it
+            current_page, filename = utils.get_progress(self.query, 1)
+        else:
+            # save to a new file
+            current_page = 1
+            today = datetime.today().strftime("%Y-%m-%d")
+            filename = f"{self.query}-job-list-dice-{today}.csv"
+
+        self.filename = filename
         params = self.get_params(current_page)
         r = session.get(self.base_url, headers=self.headers, params=params)
 
@@ -225,7 +234,7 @@ class DiceScraper:
             print(f"Total pages to be scraped: {page_count} ( around 100 jobs in each)")
             print("Extracting jobs on page (", current_page, ")...")
 
-            # # use threads to speed up job extraction
+            # extract the first page and paginate to other pages
             with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
                 future_to_job = {
                     executor.submit(self.extract_job_detail, job, 120): job
@@ -242,9 +251,12 @@ class DiceScraper:
                     else:
                         self.all_jobs.append(job_detail)
 
+            utils.save_progress(current_page+1, self.filename, 1)
+
             while current_page <= page_count:
                 current_page += 1  # go to the next page
                 self.extract_page(current_page)
+                utils.save_progress(current_page+1, self.filename, 1)
 
                 if current_page % 10 == 0:
                     # wait some seconds to avoid overwhelming the server

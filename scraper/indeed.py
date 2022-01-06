@@ -78,9 +78,7 @@ class IndeedScraper:
             salary_con = job.find("div", class_="salary-snippet-container")
             if salary_con:
                 salary = salary_con.find("div", class_="attribute_snippet").text.strip()
-                salary = re.sub(
-                    r"(\ba year|per|year|hour|an hour|hr|\/hr|a month\b)", "", salary
-                )
+                salary = utils.clean_salary(salary)
         except:
             salary = "0"
 
@@ -177,9 +175,9 @@ class IndeedScraper:
 
         global session
 
-        if utils.get_progress(2):
+        if utils.get_progress(self.query, 2):
             # already saved file found, append to it
-            page_num, filename = utils.get_progress(2)
+            page_num, filename = utils.get_progress(self.query, 2)
         else:
             # save to a new file
             page_num = 1
