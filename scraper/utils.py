@@ -88,7 +88,7 @@ def get_progress(search_term, scraper):
 
 def clean_salary(salary):
     """Clean the salary given. Convert hourly rates to yearly and remove salary ranges."""
-    
+    salary = salary.strip()
     if "-" in salary:
         # it is expressed in range (take the higher)
         salary = salary.split("-")[-1].strip()
