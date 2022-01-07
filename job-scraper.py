@@ -19,7 +19,8 @@ def welcome():
     if ch == "1" or ch == "2":
         return int(ch)
     else:
-        print("Wrong choice.")
+        print("Wrong choice. Exitting...")
+        time.sleep(1)
         sys.exit(0)
 
 

@@ -96,7 +96,7 @@ class DiceScraper:
         salary = salary.replace("to", "-")
         if not salary.startswith("$") and salary != "0":
             salary = "$" + salary
-        
+
         salary = utils.clean_salary(salary)
         return salary
 
@@ -197,13 +197,10 @@ class DiceScraper:
                     for job in jobs
                 }
                 for future in concurrent.futures.as_completed(future_to_job):
-                    job = future_to_job[future]
                     try:
                         job_detail = future.result()
-                    except Exception as exc:
-                        print(
-                            f"Exception: Unable to extract description for {job['detailsPageUrl']}"
-                        )
+                    except:
+                        pass
                     else:
                         self.all_jobs.append(job_detail)
 
@@ -232,7 +229,7 @@ class DiceScraper:
             jobs = result["data"]
             page_count = result["meta"]["pageCount"]
             print(f"Total pages to be scraped: {page_count} ( around 100 jobs in each)")
-            print("Extracting jobs on page (", current_page, ")...")
+            print("\nExtracting jobs on page (", current_page, ")...")
 
             # extract the first page and paginate to other pages
             with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -241,32 +238,27 @@ class DiceScraper:
                     for job in jobs
                 }
                 for future in concurrent.futures.as_completed(future_to_job):
-                    job = future_to_job[future]
                     try:
                         job_detail = future.result()
-                    except Exception as exc:
-                        print(
-                            f"Exception: Unable to extract description for {job['detailsPageUrl']}\n {exc}"
-                        )
+                    except:
+                        pass
                     else:
                         self.all_jobs.append(job_detail)
 
-            utils.save_progress(current_page+1, self.filename, 1)
+            utils.save_progress(current_page + 1, self.filename, 1)
 
             while current_page <= page_count:
                 current_page += 1  # go to the next page
                 self.extract_page(current_page)
-                utils.save_progress(current_page+1, self.filename, 1)
+                utils.save_progress(current_page + 1, self.filename, 1)
 
                 if current_page % 10 == 0:
                     # wait some seconds to avoid overwhelming the server
                     time.sleep(random.randint(20, 60))
-                    # ch = input("Continue? [Y/n]").lower()
 
                 time.sleep(random.randint(10, 20))
         else:
-            print("Error occurred while searching.")
-            print(r.text)
+            print("Error occurred while searching. Try again.")
 
         print(
             f"\nExtracted job listing is saved to Desktop with filename: {self.filename}\n"

@@ -25,7 +25,7 @@ git clone https://github.com/balewgize/job-scraper.git
 cd job-scraper/
 ```
 
-- Create a virtual environment inside job-scraper directory
+- Create a virtual environment inside job-scraper directory (optional)
 
 ```
 python -m venv venv
