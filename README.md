@@ -7,7 +7,7 @@ and their details extracted.
 
 Features:
 
-- fast
+- fast (uses multithreading)
 - robust (exception handling)
 - pagination (scrape all result pages)
 - resume capability (continue where it left off incase of failure)
